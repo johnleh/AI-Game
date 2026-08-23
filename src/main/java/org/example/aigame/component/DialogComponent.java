@@ -2,21 +2,16 @@ package org.example.aigame.component;
 
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.Component;
-import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
-import javafx.geometry.Pos;
 import javafx.scene.Group;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import org.example.aigame.entities.EntityTypeEnum;
+import org.example.aigame.services.ConversationService;
 import org.example.aigame.AI.personality.Personality;
+import org.example.aigame.UI.DialogUI;
+import org.example.aigame.entities.EntityTypeEnum;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
 
@@ -27,15 +22,12 @@ public class DialogComponent extends Component {
     private static final int BUBBLE_WIDTH = 30;
     private static final int BUBBLE_Z_INDEX = Integer.MAX_VALUE;
 
-    private static final int DIALOG_WIDTH = 400;
-    private static final int DIALOG_HEIGHT = 140;
-
     private final Personality personality;
 
     private Entity bubble;
     private boolean bubbleVisible = false;
 
-    private VBox dialogBox;
+    private DialogUI dialogUI;
     private boolean dialogOpen = false;
 
     public DialogComponent(Personality personality) {
@@ -78,67 +70,52 @@ public class DialogComponent extends Component {
         if (dialogOpen) return;
         dialogOpen = true;
 
-        Label greetingLabel = new Label(personality.getGreeting());
-        greetingLabel.setFont(Font.font(16));
-        greetingLabel.setTextFill(Color.BLACK);
-        greetingLabel.setWrapText(true);
-        greetingLabel.setMaxWidth(360);
+        ensureDialogUI();
 
-        TextField input = new TextField();
-        input.setPrefWidth(280);
+        ConversationService.start(personality);
 
-        Button submitButton = new Button("Submit");
-        submitButton.setOnAction(e -> handleSubmit(input.getText()));
-
-        Button exitButton = new Button("X");
-        exitButton.setStyle(
-                "-fx-background-color: #cc0000;" +
-                        "-fx-text-fill: white;" +
-                        "-fx-font-weight: bold;"
-        );
-        exitButton.setOnAction(e -> closeDialog());
-
-        HBox inputRow = new HBox(10, input, exitButton);
-        inputRow.setAlignment(Pos.CENTER_LEFT);
-
-        HBox buttonRow = new HBox(10, submitButton);
-        buttonRow.setAlignment(Pos.CENTER_RIGHT);
-
-        Rectangle background = new Rectangle(DIALOG_WIDTH, DIALOG_HEIGHT, Color.rgb(255, 255, 255, 0.95));
-        background.setStroke(Color.BLACK);
-        background.setArcWidth(12);
-        background.setArcHeight(12);
-
-        VBox content = new VBox(12, greetingLabel, inputRow, buttonRow);
-        content.setPadding(new Insets(15));
-        content.setMaxWidth(DIALOG_WIDTH);
-
-        dialogBox = new VBox(new Group(background, content));
-
-        double x = (getAppWidth() - DIALOG_WIDTH) / 2.0;
-        double y = (getAppHeight() - DIALOG_HEIGHT) / 2.0;
-        dialogBox.setTranslateX(x);
-        dialogBox.setTranslateY(y);
-
-        getGameScene().addUINode(dialogBox);
+        dialogUI.clearHistory();
+        dialogUI.addLine(personality.getName(), personality.getGreeting(), false);
+        dialogUI.setWaiting(false);
+        dialogUI.attach();
+        dialogUI.show();
 
         getInput().setProcessInput(false);
-        javafx.application.Platform.runLater(input::requestFocus);
+    }
+
+    private void ensureDialogUI() {
+        if (dialogUI != null) return;
+
+        dialogUI = new DialogUI();
+        dialogUI.setOnSubmit(this::handleSubmit);
+        dialogUI.setOnExit(this::closeDialog);
     }
 
     private void handleSubmit(String text) {
-        System.out.println(personality.getName() + " received: " + text);
-        // TODO: hook this into your AI/dialog backend
-        closeDialog();
+        dialogUI.addLine("You", text, true);
+        dialogUI.clearInput();
+        dialogUI.setWaiting(true);
+
+        ConversationService.sendMessage(text,
+                reply -> {
+                    dialogUI.setWaiting(false);
+                    dialogUI.addLine(personality.getName(), reply, false);
+                },
+                error -> {
+                    dialogUI.setWaiting(false);
+                    dialogUI.addLine(personality.getName(), "...(no response)", false);
+                    System.err.println("Ollama error: " + error.getMessage());
+                }
+        );
     }
 
     private void closeDialog() {
         if (!dialogOpen) return;
 
-        if (dialogBox != null) {
-            getGameScene().removeUINode(dialogBox);
-            dialogBox = null;
-        }
+        ConversationService.end();
+
+        dialogUI.hide();
+        dialogUI.detach();
         dialogOpen = false;
 
         getInput().setProcessInput(true);

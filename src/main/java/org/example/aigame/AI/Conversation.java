@@ -12,23 +12,26 @@ public class Conversation {
 
     List<MessagePair> messages;
 
-
-    private Conversation() {
-        List<Personality> all = Personalities.getAll();
-        System.out.println(all);
-        Personality bob = Personalities.getByName("Robert");
+    private Conversation(Personality personality) {
         String systemPrompt = Prompts.PromptLookup("CHARACTER_TEMPLATE", Map.of(
-                "CHARACTER_NAME", bob.getName(),
-                "PERSONALITY", bob.getDescription()
+                "CHARACTER_NAME", personality.getName(),
+                "PERSONALITY", personality.getDescription()
         ));
-        messages = List.of(new MessagePair("system", systemPrompt));
-        System.out.println("=== SYSTEM PROMPT ===");
-        System.out.println(messages);
-        System.out.println("======================");
+
+        messages = new ArrayList<>();
+        messages.add(new MessagePair("system", systemPrompt));
+        messages.add(new MessagePair(
+                personality.getName() + "'s History of the Player",
+                personality.getHistory()
+        ));
+    }
+
+    public static Conversation StartNewConversation(Personality personality) {
+        return new Conversation(personality);
     }
 
     public static Conversation StartNewConversation() {
-        return new Conversation();
+        return new Conversation(Personalities.getByName("Robert"));
     }
 
     public void addMessage(String role, String content) {
@@ -39,6 +42,4 @@ public class Conversation {
     public List<MessagePair> getMessages() {
         return messages;
     }
-
-
 }
