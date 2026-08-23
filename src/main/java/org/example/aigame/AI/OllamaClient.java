@@ -24,7 +24,6 @@ public class OllamaClient {
         );
 
         String jsonBody = mapper.writeValueAsString(requestBody);
-
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:11434/api/chat"))

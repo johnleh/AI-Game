@@ -19,12 +19,12 @@ public class AITester {
             if ("exit".equalsIgnoreCase(userInput) || "quit".equalsIgnoreCase(userInput)) break;
 
             conversation.addMessage("user", userInput);
-            String reply = client.sendChat(conversation, "llama3.2:3b");
+            String reply = client.sendChat(conversation, "qwen3:4b");
             conversation.addMessage("assistant", reply);
             System.out.println("character: " + reply);
         }
         System.out.println("SESSION OVER");
-        System.out.println(client.summarizeChat(conversation,"llama3.2:3b"));
+        System.out.println(client.summarizeChat(conversation,"qwen3:4b"));
     }
 
 }

@@ -15,7 +15,7 @@ public class Conversation {
     private Conversation(Personality personality) {
         String systemPrompt = Prompts.PromptLookup("CHARACTER_TEMPLATE", Map.of(
                 "CHARACTER_NAME", personality.getName(),
-                "PERSONALITY", personality.getDescription()
+                "CHARACTER_DESCRIPTION", personality.getDescription()
         ));
 
         messages = new ArrayList<>();

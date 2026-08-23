@@ -2,7 +2,7 @@
 
 A proof-of-concept 2D Java game exploring local LLM integration in real-time gameplay. Built with [FXGL](https://github.com/AlmasB/FXGL) for the game engine and [Ollama](https://ollama.com/) for on-device AI inference. The goal is NPCs that hold live, dynamically generated conversations — powered entirely by a locally-hosted model, with no cloud calls involved.
 
-> **Status: early development.** Core movement, NPC interaction, and dialog UI are in place. AI-driven responses are actively being wired in. Expect rough edges, missing features, and frequent changes.
+> **Status: early development.** Core movement, NPC interaction, and AI-driven dialog are in place and working. Expect rough edges, missing features, and frequent changes.
 
 ## What's working right now
 
@@ -10,14 +10,15 @@ A proof-of-concept 2D Java game exploring local LLM integration in real-time gam
 - Proximity-based NPC interaction — walk near an NPC and a prompt appears above them
 - Press **E** to open a dialog window with the nearest interactable NPC
 - Custom in-game dialog UI (text input, submit button, exit button) built on FXGL's scene graph
-- Per-NPC `Personality` system (name, description, greeting) to give each character distinct context
+- **Live AI-generated NPC responses** — player input is sent to a locally-running Ollama model and the generated response is displayed in the dialog UI in real time
+- Per-NPC `Personality` system (name, description, greeting) feeding context into prompts so each NPC's tone/knowledge stays consistent
 - Z-index depth sorting so entities render correctly relative to their Y position
 
 ## What's in progress
 
-- Routing player input through Ollama's local API to generate NPC responses in real time
-- Feeding `Personality` data into prompts so each NPC's tone/knowledge stays consistent
 - Conversation history per NPC (the groundwork exists in `Personality`, not yet wired into generation)
+- Take in Ollama endpoint and model in a cleaner fashion (currently hardcoded in `OllamaClient`)
+- Error handling for when Ollama is offline or unreachable
 
 ## Tech stack
 
@@ -51,13 +52,6 @@ This runs the `AIGameApplication` main class via the JavaFX Maven plugin.
 |---|---|
 | W / A / S / D | Move |
 | E | Interact with nearby NPC |
-
-## Roadmap
-
-- [ ] Full Ollama integration for NPC dialog generation
-- [ ] Persistent conversation history per NPC
-- [ ] Multiple NPCs with distinct personalities and maps
-- [ ] Polish dialog UI (loading state while waiting on model response, error handling for Ollama being offline)
 
 ## Disclaimer
 

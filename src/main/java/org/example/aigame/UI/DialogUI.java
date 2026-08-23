@@ -62,9 +62,15 @@ public class DialogUI {
         submitButton.setOnAction(e -> handleSubmit());
 
         Button exitButton = new Button("X");
-        exitButton.setStyle("-fx-background-color: #cc0000; -fx-text-fill: white; -fx-font-weight: bold;");
+        exitButton.setStyle(
+                "-fx-background-color: #cc0000; " +
+                        "-fx-text-fill: white; " +
+                        "-fx-font-weight: bold;"
+        );
         exitButton.setOnAction(e -> {
-            if (onExit != null) onExit.run();
+            if (onExit != null) {
+                onExit.run();
+            }
         });
 
         HBox inputRow = new HBox(10, input, submitButton, exitButton);
@@ -76,8 +82,11 @@ public class DialogUI {
         VBox content = new VBox(10, historyScrollPane, inputRow, buttonRow);
         content.setPadding(new Insets(15));
         content.setStyle(
-                "-fx-background-color: rgba(20,20,20,0.95); -fx-border-color: black; " +
-                        "-fx-border-width: 2; -fx-background-radius: 10; -fx-border-radius: 10;"
+                "-fx-background-color: rgba(20,20,20,0.95); " +
+                        "-fx-border-color: black; " +
+                        "-fx-border-width: 2; " +
+                        "-fx-background-radius: 10; " +
+                        "-fx-border-radius: 10;"
         );
         content.setPrefWidth(BOX_WIDTH);
 
@@ -124,17 +133,32 @@ public class DialogUI {
 
         Text speakerText = new Text(speaker + ": ");
         speakerText.setFill(isPlayer ? Color.LIGHTBLUE : Color.WHITE);
-        speakerText.setStyle("-fx-font-family: '" + FONT_FAMILY + "'; -fx-font-size: " + FONT_SIZE + "px; -fx-font-weight: bold;");
+        speakerText.setStyle(
+                "-fx-font-family: '" + FONT_FAMILY + "'; " +
+                        "-fx-font-size: " + FONT_SIZE + "px; " +
+                        "-fx-font-weight: bold;"
+        );
 
         Text bodyText = new Text(text);
         bodyText.setFill(Color.WHITE);
-        bodyText.setStyle("-fx-font-family: '" + FONT_FAMILY + "'; -fx-font-size: " + FONT_SIZE + "px;");
+        bodyText.setStyle(
+                "-fx-font-family: '" + FONT_FAMILY + "'; " +
+                        "-fx-font-size: " + FONT_SIZE + "px;"
+        );
 
         flow.getChildren().addAll(speakerText, bodyText);
         flow.setPrefWidth(BOX_WIDTH - 60);
 
         historyContainer.getChildren().add(flow);
-        Platform.runLater(() -> historyScrollPane.setVvalue(1.0));
+
+        // Wait until JavaFX has laid out the newly added response,
+        // then move the scroll position all the way to the bottom.
+        Platform.runLater(() -> {
+            historyContainer.applyCss();
+            historyContainer.layout();
+            historyScrollPane.layout();
+            historyScrollPane.setVvalue(1.0);
+        });
     }
 
     public void setWaiting(boolean waiting) {
@@ -150,7 +174,13 @@ public class DialogUI {
 
     private void handleSubmit() {
         String text = input.getText();
-        if (text == null || text.isBlank()) return;
-        if (onSubmit != null) onSubmit.accept(text);
+
+        if (text == null || text.isBlank()) {
+            return;
+        }
+
+        if (onSubmit != null) {
+            onSubmit.accept(text);
+        }
     }
 }
