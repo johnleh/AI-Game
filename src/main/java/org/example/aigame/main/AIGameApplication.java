@@ -86,7 +86,6 @@ public class AIGameApplication extends GameApplication {
     protected void initGameVars(Map<String, Object> vars) {}
 
     private Entity player;
-    private Entity npc;
 
     @Override
     protected void initGame() {
@@ -103,9 +102,14 @@ public class AIGameApplication extends GameApplication {
         createBasicWall();
 
         player = spawn("player", new SpawnData(300, 300).put("sprite", "PERSON1.png"));
-        npc = spawn("npc", new SpawnData(400, 300)
-                .put("sprite", "PERSON2.png")
+
+        spawn("npc", new SpawnData(400, 300)
+                .put("sprite", "BASIC_BOB.png")
                 .put("personality", Personalities.getByName("Robert")));
+
+        spawn("npc", new SpawnData(200, 200)
+                .put("sprite", "PERSON4.png")
+                .put("personality", Personalities.getByName("Sam")));
     }
 
     @Override

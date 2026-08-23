@@ -58,7 +58,7 @@ public class DialogUI {
         input.setPrefWidth(280);
         input.setOnAction(e -> handleSubmit());
 
-        submitButton = new Button("Submit");
+        submitButton = new Button("⬆");
         submitButton.setOnAction(e -> handleSubmit());
 
         Button exitButton = new Button("X");
@@ -67,10 +67,10 @@ public class DialogUI {
             if (onExit != null) onExit.run();
         });
 
-        HBox inputRow = new HBox(10, input, exitButton);
+        HBox inputRow = new HBox(10, input, submitButton, exitButton);
         inputRow.setAlignment(Pos.CENTER_LEFT);
 
-        HBox buttonRow = new HBox(10, submitButton, statusLabel);
+        HBox buttonRow = new HBox(10, statusLabel);
         buttonRow.setAlignment(Pos.CENTER_RIGHT);
 
         VBox content = new VBox(10, historyScrollPane, inputRow, buttonRow);

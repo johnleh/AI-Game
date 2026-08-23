@@ -1,5 +1,7 @@
-package org.example.aigame.AI;
+package org.example.aigame.main;
 
+import org.example.aigame.AI.Conversation;
+import org.example.aigame.AI.OllamaClient;
 import org.example.aigame.AI.prompts.Prompts;
 
 import java.util.Scanner;
