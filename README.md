@@ -4,6 +4,10 @@ A proof-of-concept 2D Java game exploring local LLM integration in real-time gam
 
 > **Status: early development.** Core movement, NPC interaction, and AI-driven dialog are in place and working. Expect rough edges, missing features, and frequent changes.
 
+## Demo
+
+![Demo of an in-game conversation with an AI-driven NPC](src/main/resources/documentation/Demo_Convo.gif)
+
 ## What's working right now
 
 - Top-down player movement (WASD) with wall collision

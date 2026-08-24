@@ -75,6 +75,7 @@ public class DialogComponent extends Component {
         ConversationService.start(personality);
 
         dialogUI.clearHistory();
+        dialogUI.setSpeaker(personality);
         dialogUI.addLine(personality.getName(), personality.getGreeting(), false);
         dialogUI.setWaiting(false);
         dialogUI.attach();

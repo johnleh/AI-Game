@@ -48,11 +48,12 @@ public class Personalities {
 
                     String name = node.has("name") ? node.get("name").asText() : null;
                     String description = node.has("description") ? node.get("description").asText() : "";
+                    String portrait = node.has("portrait") ? node.get("portrait").asText() : null;
+                    String greeting = node.has("greeting") ? node.get("greeting").asText() : null;
 
                     if (name == null || name.isBlank()) continue;
 
-
-                    Personality personality = new Personality(name, description);
+                    Personality personality = new Personality(name, description, portrait, greeting);
 
                     if (node.has("history")) {
                         personality.setHistory(node.get("history").asText());
